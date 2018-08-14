@@ -21,6 +21,7 @@ import android.support.annotation.VisibleForTesting;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
+import org.mozilla.javascript.SecurityController;
 
 import java.io.File;
 
@@ -30,10 +31,13 @@ import java.io.File;
  * @author F43nd1r
  * @since 11.01.2016
  */
-@VisibleForTesting
 public class AndroidContextFactory extends ContextFactory {
 
     private final File cacheDirectory;
+
+    public AndroidContextFactory(android.content.Context context) {
+        this(new File(context.getCacheDir(), "classes"));
+    }
 
     /**
      * Create a new factory. It will cache generated code in the given directory
@@ -41,6 +45,8 @@ public class AndroidContextFactory extends ContextFactory {
      * @param cacheDirectory the cache directory
      */
     public AndroidContextFactory(File cacheDirectory) {
+        if (!SecurityController.hasGlobal())
+            SecurityController.initGlobal(new NoSecurityController());
         this.cacheDirectory = cacheDirectory;
         initApplicationClassLoader(createClassLoader(AndroidContextFactory.class.getClassLoader()));
     }
