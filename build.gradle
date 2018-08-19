@@ -29,7 +29,7 @@ android {
 dependencies {
     api 'org.mozilla:rhino:1.7.8'
     implementation 'com.android.support:support-annotations:27.1.0'
-    implementation 'com.jakewharton.android.repackaged:dalvik-dx:7.1.0_r7'
+    implementation 'com.jakewharton.android.repackaged:dalvik-dx:9.0.0_r3'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test:rules:1.0.1'
     androidTestImplementation 'org.yaml:snakeyaml:1.19'

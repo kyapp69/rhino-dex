@@ -22,6 +22,7 @@ import android.support.annotation.Nullable;
 import com.android.dex.Dex;
 import com.android.dx.cf.direct.DirectClassFile;
 import com.android.dx.cf.direct.StdAttributeFactory;
+import com.android.dx.command.dexer.DxContext;
 import com.android.dx.dex.DexOptions;
 import com.android.dx.dex.cf.CfOptions;
 import com.android.dx.dex.cf.CfTranslator;
@@ -40,6 +41,8 @@ import java.io.IOException;
  * @since 11.01.2016
  */
 abstract class BaseAndroidClassLoader extends ClassLoader implements GeneratedClassLoader {
+
+    private static final DxContext DX_CONTEXT = new DxContext();
 
     /**
      * Create a new instance with the given parent classloader
@@ -61,11 +64,11 @@ abstract class BaseAndroidClassLoader extends ClassLoader implements GeneratedCl
             DirectClassFile classFile = new DirectClassFile(data, name.replace('.', '/') + ".class", true);
             classFile.setAttributeFactory(StdAttributeFactory.THE_ONE);
             classFile.getMagic();
-            dexFile.add(CfTranslator.translate(classFile, null, new CfOptions(), dexOptions, dexFile));
+            dexFile.add(CfTranslator.translate(DX_CONTEXT, classFile, null, new CfOptions(), dexOptions, dexFile));
             Dex dex = new Dex(dexFile.toDex(null, false));
             Dex oldDex = getLastDex();
             if (oldDex != null) {
-                dex = new DexMerger(new Dex[]{dex, oldDex}, CollisionPolicy.KEEP_FIRST).merge();
+                dex = new DexMerger(new Dex[]{dex, oldDex}, CollisionPolicy.KEEP_FIRST, DX_CONTEXT).merge();
             }
             return loadClass(dex, name);
         } catch (IOException | ClassNotFoundException e) {
